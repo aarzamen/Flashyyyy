@@ -40,6 +40,24 @@ The app requires a `GEMINI_API_KEY` in `.env.local`. Vite exposes it as `process
 
 **AI model used:** `gemini-3.1-flash-lite-preview` via `@google/genai` SDK.
 
+## Custom Slash Commands & Skills
+
+### `/design <prompt or file path>`
+
+Multi-trajectory UI design generator inspired by this app's own Flash UI pattern. Takes the core concept — fan a prompt into multiple visual trajectories, present them concurrently, let the user collapse to one, then deepen — and makes it a reusable Claude Code workflow.
+
+- **Output**: `.designs/` directory (gitignored) with `direction-a.html`, `direction-b.html`, `direction-c.html`, and an `index.html` gallery
+- **Preview**: Served on `http://localhost:3333` via `npx serve`
+- **Gallery**: Keyboard shortcuts (`1`/`2`/`3` to focus, `F` fullscreen, `Esc` back), responsive (3-up desktop, tabs mobile)
+- **Input modes**: Natural language prompt (design from scratch) or file path (redesign existing component)
+- **Deepening paths after selection**: Variations (explore within direction), Extract Component (to project framework), Integrate (wire into app), Remix (new prompt, same aesthetic DNA)
+
+### `multi-design` Skill (installable)
+
+The `/design` command is backed by `skills/multi-design/SKILL.md` — a standalone, installable skill following [Anthropic's official skill format](https://github.com/anthropics/skills). It can be used in Claude Code CLI, Claude Desktop, or any Claude environment that supports skills. The skill includes:
+- `SKILL.md` — full instructions with YAML frontmatter for auto-triggering
+- `assets/gallery-template.html` — the comparison gallery page
+
 ## License
 
 Apache-2.0 (SPDX headers in source files).

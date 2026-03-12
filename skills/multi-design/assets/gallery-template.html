@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>Design Directions — /design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0b;
+            --surface: #141416;
+            --border: #232328;
+            --text: #e4e4e7;
+            --text-muted: #71717a;
+            --accent: #a78bfa;
+            --accent-dim: rgba(167, 139, 250, 0.12);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---- Header ---- */
+        header {
+            padding: 24px 32px;
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+        }
+        header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* ---- Navigation Tabs (mobile) ---- */
+        .tabs {
+            display: none;
+            padding: 12px 16px;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab:hover { border-color: var(--text-muted); color: var(--text); }
+        .tab.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ---- Grid (desktop: 3-up, tablet: 2-up, mobile: 1-up) ---- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            flex: 1;
+            min-height: 0;
+        }
+        .card {
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .card-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .card-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-letter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .card-name {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .card-actions button {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .card-actions button:hover {
+            border-color: var(--text-muted);
+            color: var(--text);
+        }
+        .card iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: white;
+            min-height: 500px;
+        }
+
+        /* ---- Fullscreen overlay ---- */
+        .fullscreen-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: var(--bg);
+            display: none;
+            flex-direction: column;
+        }
+        .fullscreen-overlay.active { display: flex; }
+        .fullscreen-bar {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .fullscreen-bar .card-label { gap: 10px; }
+        .fullscreen-close {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+        .fullscreen-close:hover { background: var(--accent-dim); }
+        .fullscreen-overlay iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* ---- Layout wrapper ---- */
+        .layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 1200px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .tabs { display: flex; }
+            .grid { grid-template-columns: 1fr; }
+            .card { display: none; }
+            .card.active-mobile { display: flex; }
+        }
+
+        /* ---- Keyboard hint ---- */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 50;
+        }
+        .keyboard-hint kbd {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--accent-dim);
+            color: var(--accent);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <header>
+            <h1>/design</h1>
+            <p id="prompt-label">3 directions</p>
+        </header>
+
+        <div class="tabs" id="tabs"></div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="keyboard-hint">
+            <span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> Focus</span>
+            <span><kbd>F</kbd> Fullscreen</span>
+            <span><kbd>Esc</kbd> Back</span>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="fullscreen">
+        <div class="fullscreen-bar">
+            <div class="card-label">
+                <span class="card-letter" id="fs-letter"></span>
+                <span class="card-name" id="fs-name"></span>
+            </div>
+            <button class="fullscreen-close" onclick="closeFullscreen()">Esc — Close</button>
+        </div>
+        <iframe id="fs-iframe"></iframe>
+    </div>
+
+    <script>
+        // ---- Config: these get replaced by the /design command ----
+        const directions = [
+            { letter: 'A', name: 'Direction A', file: 'direction-a.html' },
+            { letter: 'B', name: 'Direction B', file: 'direction-b.html' },
+            { letter: 'C', name: 'Direction C', file: 'direction-c.html' },
+        ];
+
+        const grid = document.getElementById('grid');
+        const tabs = document.getElementById('tabs');
+        let activeMobile = 0;
+
+        // Build cards
+        directions.forEach((d, i) => {
+            // Card
+            const card = document.createElement('div');
+            card.className = 'card' + (i === 0 ? ' active-mobile' : '');
+            card.dataset.index = i;
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-label">
+                        <span class="card-letter">${d.letter}</span>
+                        <span class="card-name">${d.name}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button onclick="openFullscreen(${i})">Expand</button>
+                        <button onclick="openSource(${i})">Source</button>
+                    </div>
+                </div>
+                <iframe src="${d.file}" title="${d.name}" loading="lazy"></iframe>
+            `;
+            grid.appendChild(card);
+
+            // Tab
+            const tab = document.createElement('button');
+            tab.className = 'tab' + (i === 0 ? ' active' : '');
+            tab.textContent = `${d.letter} — ${d.name}`;
+            tab.onclick = () => switchMobile(i);
+            tabs.appendChild(tab);
+        });
+
+        function switchMobile(index) {
+            activeMobile = index;
+            document.querySelectorAll('.card').forEach((c, i) => {
+                c.classList.toggle('active-mobile', i === index);
+            });
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', i === index);
+            });
+        }
+
+        function openFullscreen(index) {
+            const d = directions[index];
+            document.getElementById('fs-letter').textContent = d.letter;
+            document.getElementById('fs-name').textContent = d.name;
+            document.getElementById('fs-iframe').src = d.file;
+            document.getElementById('fullscreen').classList.add('active');
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreen').classList.remove('active');
+            document.getElementById('fs-iframe').src = '';
+        }
+
+        function openSource(index) {
+            window.open(directions[index].file, '_blank');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') openFullscreen(0);
+            else if (e.key === '2') openFullscreen(1);
+            else if (e.key === '3' && directions.length > 2) openFullscreen(2);
+            else if (e.key === 'f' || e.key === 'F') {
+                const fs = document.getElementById('fullscreen');
+                if (!fs.classList.contains('active')) openFullscreen(activeMobile);
+            }
+            else if (e.key === 'Escape') closeFullscreen();
+        });
+    </script>
+</body>
+</html>
